@@ -18,6 +18,7 @@ class TestYTMusic(unittest.TestCase):
         options.set_capability('adbExecTimeout', 60000)
         
         cls.driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
+        cls.driver.set_network_connection(6)
 
     def setUp(self):
         # Espera até que o aplicativo esteja pronto para interação
@@ -135,20 +136,56 @@ class TestYTMusic(unittest.TestCase):
         clear_btn.click()
 
 
-    # def test_explore_genres_and_moods(self):
-        #pass
+    def test_explore_genres_and_moods_check_blues(self):
+        wait = WebDriverWait(self.driver, 20) 
 
-    #Precondicao: O usuário deve estar OFFLINE
-    # def test_explore_genres_and_moods_navigation(self):
-        #pass
+        btn_explore = wait.until(EC.element_to_be_clickable(YTMusicLocators.BTN_EXPLORE))
+        btn_explore.click()
 
+        genres_and_moods_section = wait.until(EC.presence_of_element_located(YTMusicLocators.GENRES_AND_MOODS_SECTION))
+        genres_and_moods_section.click()
+
+        # Verifica se o título da seção "Moods & genres" está correto
+        genres_and_moods_title = wait.until(EC.presence_of_element_located(YTMusicLocators.GENRES_AND_MOODS_TITLE))
+        genres_and_moods_title = genres_and_moods_title.text.replace('\n', ' ')
+        self.assertEqual(genres_and_moods_title, "Moods & genres", f"Esperado: 'Moods & genres', Encontrado: '{genres_and_moods_title}'")
+        
+        #Verifica que o gênero "Blues" está visível na tela
+        genre_blues = wait.until(EC.presence_of_element_located(YTMusicLocators.GENRE_BLUES))
+        self.assertTrue(genre_blues.is_displayed(), "O gênero 'Blues' não está visível na tela.")
+
+
+    #Precondicao: O usuário deve estar OFFLINE (acho que esse vai ser dificil de reproduzir)
+    def test_explore_genres_and_moods_check_blues(self):
+        wait = WebDriverWait(self.driver, 20) 
+
+        btn_explore = wait.until(EC.element_to_be_clickable(YTMusicLocators.BTN_EXPLORE))
+        btn_explore.click()
+
+        genres_and_moods_section = wait.until(EC.presence_of_element_located(YTMusicLocators.GENRES_AND_MOODS_SECTION))
+        genres_and_moods_section.click()
+
+        #fica offline
+        self.driver.set_network_connection(1) #modo aviao
+
+        genre_african = wait.until(EC.presence_of_element_located(YTMusicLocators.GENRE_AFRICAN))
+        genre_african.click()
+
+        # Verifica que esta offline
+        network_error_message = wait.until(EC.presence_of_element_located(YTMusicLocators.NETWORK_ERROR_MESSAGE))
+        self.assertTrue(network_error_message.is_displayed(), "A mensagem de erro de rede não está visível na tela.")
+        
 
     def tearDown(self):
+        self.driver.set_network_connection(6)
         try:
             btn_home = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(YTMusicLocators.BTN_HOME))
             btn_home.click()
         except:
             print("Não foi possível retornar à home no tearDown.")
+            # Opcional: Se não conseguir clicar, reinicie o app
+            self.driver.terminate_app("com.google.android.apps.youtube.music")
+            self.driver.activate_app("com.google.android.apps.youtube.music")
 
     @classmethod
     def tearDownClass(cls):
