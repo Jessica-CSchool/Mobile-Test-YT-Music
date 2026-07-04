@@ -38,5 +38,12 @@ class YTMusicLocators:
     BAND_IN_LIBRARY = (AppiumBy.ID, 'com.google.android.apps.youtube.music:id/subtitle')
 
     #menu explore
-    GENRES_AND_MOODS_SECTION = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.ViewGroup").instance(9)')
+    GENRES_AND_MOODS_SECTION = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.ImageView").instance(10)')
+    GENRES_AND_MOODS_TITLE = (AppiumBy.ID, 'com.google.android.apps.youtube.music:id/two_line_header')
+    GENRE_BLUES = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("Blues")')
+    GENRE_AFRICAN = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("African")')
+    GENRE_TITLE_PAGE = (AppiumBy.ID, 'com.google.android.apps.youtube.music:id/toolbar_title')
+
+    #Offline message
+    NETWORK_ERROR_MESSAGE = (AppiumBy.ID, 'com.google.android.apps.youtube.music:id/error_message_text')
     
